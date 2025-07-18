@@ -3,6 +3,7 @@ set -e
 
 sudo apt-get update
 sudo apt-get install -y net-tools curl vim ufw
+
 sudo ufw disable
 
 echo "Attente du serveur K3s..."
