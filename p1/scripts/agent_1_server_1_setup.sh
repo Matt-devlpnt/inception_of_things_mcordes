@@ -12,3 +12,9 @@ until curl -k https://192.168.56.110:6443; do
 done
 
 curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent --node-ip=192.168.56.111 --server https://192.168.56.110:6443 --token 12345" sh -s -
+
+# add autocomplete permanently to your bash shell.
+echo "source <(sudo kubectl completion bash)" >> /home/vagrant/.bashrc
+
+echo "alias k='sudo kubectl'" >> /home/vagrant/.bashrc
+echo "complete -o default -F __start_kubectl k" >> /home/vagrant/.bashrc

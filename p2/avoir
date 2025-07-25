@@ -1,3 +1,8 @@
+Pour obtenir la version du noyau :
+k get nodes/mcordess -o json | jq '.status.nodeInfo.kernelVersion'
+
+------------------------------------------------------------------------------------------
+
 Tu dois configurer un cluster K3s en **mode serveur** avec 1 VM, faire tourner **3 applications web** (app1, app2, app3), et exposer ces applications **selon l'en-tête HTTP `Host`** utilisé dans la requête. Voici une solution étape par étape :
 
 ---
