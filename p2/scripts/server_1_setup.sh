@@ -23,3 +23,5 @@ sudo kubectl create deployment app-three --image=nginx
 sudo kubectl expose deployment/app-one --type='ClusterIP' --port=80 --cluster-ip='10.43.171.213'
 sudo kubectl expose deployment/app-two --type='ClusterIP' --port=80 --cluster-ip='10.43.193.160'
 sudo kubectl expose deployment/app-three --type='ClusterIP' --port=80 --cluster-ip='10.43.229.156'
+sudo kubectl create ingress apps --class=traefik --rule="app1.com/=app-one:80" --rule="app2.com/=app-two:80"
+sudo kubectl create ingress apps-default --class=traefik --default-backend="app-three:80"
