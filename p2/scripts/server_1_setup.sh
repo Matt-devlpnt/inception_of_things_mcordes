@@ -16,12 +16,27 @@ echo "source <(sudo kubectl completion bash)" >> /home/vagrant/.bashrc
 echo "alias k='sudo kubectl'" >> /home/vagrant/.bashrc
 echo "complete -o default -F __start_kubectl k" >> /home/vagrant/.bashrc
 
-sudo kubectl create deployment app-one --image=nginx
-sudo kubectl create deployment app-two --image=nginx --replicas=3
-sudo kubectl create deployment app-three --image=nginx
+# Apps creation
+sudo kubectl apply -f /vagrant/confs/app1.yaml
+sudo kubectl apply -f /vagrant/confs/app2.yaml
+sudo kubectl apply -f /vagrant/confs/app3.yaml
 
+# Services creation
 sudo kubectl expose deployment/app-one --type='ClusterIP' --port=80 --cluster-ip='10.43.171.213'
 sudo kubectl expose deployment/app-two --type='ClusterIP' --port=80 --cluster-ip='10.43.193.160'
 sudo kubectl expose deployment/app-three --type='ClusterIP' --port=80 --cluster-ip='10.43.229.156'
+
+# Ingress creation
 sudo kubectl create ingress apps --class=traefik --rule="app1.com/=app-one:80" --rule="app2.com/=app-two:80"
 sudo kubectl create ingress apps-default --class=traefik --default-backend="app-three:80"
+
+# Copy index.html template to index.html
+sudo cp /vagrant/confs/index_template_app1.html /vagrant/confs/app1/index.html
+sudo cp /vagrant/confs/index_template_app2.html /vagrant/confs/app2/index.html
+sudo cp /vagrant/confs/index_template_app3.html /vagrant/confs/app3/index.html
+
+pods=($(sudo kubectl get pods -o custom-columns=NAME:.metadata.name --no-headers))
+
+for pod in "${pods[@]}"; do
+    sudo kubectl exec pods/$pod -- bash -c 'envsubst < /usr/share/nginx/html/index.html > /usr/share/nginx/html/a' # <-- a voir car cela ne creer pas le fichier test a
+done
