@@ -37,18 +37,24 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
-        - mountPath: /usr/share/nginx/html/
-          name: app-one-volume
+        - mountPath: /root/index_template_app1.html
+          name: index-template-app1
+        - mountPath: /root/script.sh
+          name: script-app1
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
       volumes:
-      - name: app-one-volume
+      - name: index-template-app1
         hostPath: 
-          path: /vagrant/confs/app1/
-          type: Directory
+          path: /vagrant/confs/app1/index_template_app1.html
+          type: FileOrCreate
+      - name: script-app1
+        hostPath: 
+          path: /vagrant/confs/app1/script.sh
+          type: FileOrCreate
 status:
   availableReplicas: 1
   conditions:

@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 
 sudo apt-get update
@@ -30,13 +31,12 @@ sudo kubectl expose deployment/app-three --type='ClusterIP' --port=80 --cluster-
 sudo kubectl create ingress apps --class=traefik --rule="app1.com/=app-one:80" --rule="app2.com/=app-two:80"
 sudo kubectl create ingress apps-default --class=traefik --default-backend="app-three:80"
 
-# Copy index.html template to index.html
-sudo cp /vagrant/confs/index_template_app1.html /vagrant/confs/app1/index.html
-sudo cp /vagrant/confs/index_template_app2.html /vagrant/confs/app2/index.html
-sudo cp /vagrant/confs/index_template_app3.html /vagrant/confs/app3/index.html
-
-pods=($(sudo kubectl get pods -o custom-columns=NAME:.metadata.name --no-headers))
+until pods=($(sudo kubectl get pods -n default -o custom-columns=NAME:.metadata.name --no-headers)) && [ ${#pods[@]} -ge 5 ]; do
+    sleep 2
+done
 
 for pod in "${pods[@]}"; do
-    sudo kubectl exec pods/$pod -- bash -c 'envsubst < /usr/share/nginx/html/index.html > /usr/share/nginx/html/a' # <-- a voir car cela ne creer pas le fichier test a
+    until sudo kubectl exec "pods/$pod" -- bash /root/script.sh; do
+        sleep 2
+    done
 done
