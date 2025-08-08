@@ -118,7 +118,7 @@ sudo kubectl apply -n argocd -f ./confs/ingress.yaml
 #chmod +x argocd
 #sudo mv argocd /usr/local/bin/
 
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#######################################################
 
 # NOTA BENE :
 
