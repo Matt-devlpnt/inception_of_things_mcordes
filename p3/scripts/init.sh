@@ -45,7 +45,7 @@ echo -ne "${VERT}cluster-1 creation | ${RESET}"
 sudo k3d cluster list cluster-1
 if [ $? -ne 0 ]; then
     # Create a cluster
-    sudo k3d cluster create cluster-1 -p 443:443 -p 8888:80
+    sudo k3d cluster create cluster-1 -p 443:443 -p 80:80
 
     echo -e "${VERT}OK${RESET}"
 else
@@ -118,6 +118,21 @@ sudo kubectl apply -n argocd -f ./confs/ingress.yaml
 #chmod +x argocd
 #sudo mv argocd /usr/local/bin/
 
-#NOTA BENE :
-#Le Username par default est :      admin
-#Le password se trouve comme cela : sudo kubectl -n argocd get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+# NOTA BENE :
+
+# Le Username par default est :
+# admin
+
+# Le password se trouve comme cela :
+# sudo argocd admin initial-password -n argocd
+
+# La connection a au serveur argocd :
+# sudo argocd login localhost:443 --username admin --password PTb2j8jSU6UvcaeD --insecure
+
+# La deconnection a au serveur argocd :
+# sudo argocd logout localhost:443
+
+# Deployer une app :
+# sudo argocd app create guestbook --repo https://github.com/argoproj/argocd-example-apps.git --path guestbook --dest-server https://kubernetes.default.svc --dest-namespace dev
