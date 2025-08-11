@@ -121,15 +121,24 @@ kubectl apply -n argocd -f ./confs/ingress.yaml
 
 
 # Argocd connection
-until argocd login localhost:443 --username admin --password "$(kubectl --insecure-skip-tls-verify -n argocd get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d)" --insecure --grpc-web; do
+until kubectl --insecure-skip-tls-verify -n argocd get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}'; do
+	sleep 2
+done
+
+KEY=$(kubectl --insecure-skip-tls-verify -n argocd get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d)
+
+echo ${KEY}
+
+until argocd login localhost:443 --skip-test-tls --username admin --password ${KEY} --insecure --grpc-web; do
 	sleep 2
 done
 
 # App deployment
-argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things_mcordes.git --path p3/confs/app --dest-server https://kubernetes.default.svc --dest-namespace dev --grpc-web
+#argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things_mcordes.git --path p3/confs/app --dest-server https://kubernetes.default.svc --dest-namespace dev --grpc-web
+argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things_mcordes_app.git --path manifests --dest-server https://kubernetes.default.svc --sync-policy automated --auto-prune --self-heal --dest-namespace dev --grpc-web
 
 # Synchronise app
-argocd app sync app
+#argocd app sync app
 
 
 
@@ -147,3 +156,7 @@ argocd app sync app
 
 # Le password se trouve comme cela :
 # kubectl -n argocd get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
+
+#  alias github
+# git config --local alias.up '!f() { if [ -z "$1" ] || [ -z "$1" ]; then echo "Error: message and tag name required"; else git add . && git commit -m "$1" && git tag -f -a "$1" -m "$1" && git push origin "$1"; fi; }; f'
+# git config --local alias.up '!f() { if [ -z "$1" ] || [ -z "$1" ]; then echo "Error: message and tag name required"; else git add . && git commit -m "$1" && git push; fi; }; f'
