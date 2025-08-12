@@ -1,15 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: argocd-ingress
+  name: dev-ingress
+  namespace: dev
 spec:
   rules:
-  - http:
+  - host: localhost
+    http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: argocd-server
+            name: dev-service
             port:
-              number: 80 # Argocd-Server service port
+              number: 8888 # Argocd-Server service port

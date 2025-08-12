@@ -50,7 +50,7 @@ echo -ne "${VERT}cluster-1 creation | ${RESET}"
 k3d cluster list cluster-1
 if [ $? -ne 0 ]; then
     # Create a cluster
-    k3d cluster create cluster-1 -p 443:443 -p 80:80
+    k3d cluster create cluster-1 -p 443:443 -p 8888:80
     rm -rf $HOME/.kube
     mkdir $HOME/.kube
     k3d kubeconfig get cluster-1 > $HOME/.kube/config
@@ -117,7 +117,8 @@ fi
 kubectl apply -n argocd -f ./confs/argocd.yaml
 
 # Ingress deployment
-kubectl apply -n argocd -f ./confs/ingress.yaml
+kubectl apply -n argocd -f ./confs/ingress_argocd.yaml
+kubectl apply -n dev -f ./confs/ingress_dev.yaml
 
 
 # Argocd connection
@@ -129,17 +130,13 @@ KEY=$(kubectl --insecure-skip-tls-verify -n argocd get secrets argocd-initial-ad
 
 echo ${KEY}
 
-until argocd login localhost:443 --skip-test-tls --username admin --password ${KEY} --insecure --grpc-web; do
+until argocd login argocd.admin.com:443 --skip-test-tls --username admin --password ${KEY} --insecure --grpc-web; do
 	sleep 2
 done
 
 # App deployment
 #argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things_mcordes.git --path p3/confs/app --dest-server https://kubernetes.default.svc --dest-namespace dev --grpc-web
 argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things_mcordes_app.git --path manifests --dest-server https://kubernetes.default.svc --sync-policy automated --auto-prune --self-heal --dest-namespace dev --grpc-web
-
-# Synchronise app
-#argocd app sync app
-
 
 
 #VERSION=$(curl -s https://api.github.com/repos/argoproj/argo-cd/releases/latest | grep tag_name | cut -d '"' -f 4)
