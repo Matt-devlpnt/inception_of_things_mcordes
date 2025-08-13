@@ -1,35 +1,75 @@
 #!/bin/bash
 
 
-VERT='\033[38;5;82m'
-ROUGE='\033[38;5;196m'
+##############################  Variables ################################
+GREEN='\033[38;5;82m'
+RED='\033[38;5;196m'
 RESET='\033[0m'
 
 
-sudo apt-get update
-sudo apt-get upgrade -y
+##############################  Functions ################################
+
+# This function must take three arguments:
+# First argument: there is two values "nnl" (no newline) or "nl" (newline)
+# Second argument: this the color of message | there two values "r" (red) or "g" (green)
+# Third argument: this is the message itself
+
+print_message() {
+    if [ $1 = "nnl" ]; then
+        if [ $2 = "g" ]; then
+            echo -ne "${GREEN}${3}${RESET}"
+        else
+            echo -ne "${RED}${3}${RESET}"
+        fi
+    else
+        if [ $2 = "g" ]; then
+            echo -e "${GREEN}${3}${RESET}"
+        else
+            echo -e "${RED}${3}${RESET}"
+        fi
+    fi
+}
 
 
-echo -ne "${VERT}K3d installation | ${RESET}"
-k3d --version
-if [ $? -ne 0 ]; then
-    # Install K3d
-    sudo wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+# This function must take two arguments:
+# - First argument: the return value $? of the function used before using the response_status function
+# - Second argument: the error message associated with the command
 
-    echo -e "${VERT}OK${RESET}"
-else
-    echo -e "${VERT}already exist${RESET}"
-fi
+response_status() {
+    if [ ${1} -eq 0 ]; then
+        print_message "nl" "g" "OK"
+        return 0
+    else
+        print_message "nl" "r" "KO"
+        print_message "nl" "r" ${2}
+        exit 1
+    fi
+}
 
 
-echo -e "${VERT}Git alias${RESET}"
-grep 'alias g="git"' $HOME/.bashrc || echo 'alias g="git"' >> $HOME/.bashrc
-git config --local alias.up '!f() { if [ -z "$1" ] || [ -z "$1" ]; then echo "Error: message and tag name required"; else git add . && git commit -m "$1" && git push; fi; }; f'
+# This function is an installation utils checker and take two arguments:
+# - First argument: the return value $? of the function used before using the response_status function
+# - Second argument: this argument is a util install command
 
-echo -e "${VERT}K3d autocompletion${RESET}"
-grep 'source <(k3d completion bash)' $HOME/.bashrc || echo '' >> $HOME/.bashrc
-grep 'source <(k3d completion bash)' $HOME/.bashrc || echo 'source <(k3d completion bash)' >> $HOME/.bashrc
-source $HOME/.bashrc
+installation_utils_checker() {
+    if [ $1 -ne 0 ]; then
+        bash $2 >> ./script.log 2>&1
+        print_message "nl" "g" "OK"
+    else
+        print_message "nl" "g" "Already exist"
+    fi
+}
+
+
+##########################################################################
+sudo apt-get update >> ./script.log 2>&1
+sudo apt-get upgrade -y >> ./script.log 2>&1
+
+
+##############################  K3d installation #########################
+print_message "nnl" "g" "K3d installation | "
+k3d --version >> ./script.log 2>&1
+installation_utils_checker $? "sudo wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash"
 
 
 # Add Docker's official GPG key:
@@ -50,7 +90,7 @@ sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 
-echo -ne "${VERT}cluster-1 creation | ${RESET}"
+echo -ne "${GREEN}cluster-1 creation | ${RESET}"
 k3d cluster list cluster-1
 if [ $? -ne 0 ]; then
     # Create a cluster
@@ -59,107 +99,113 @@ if [ $? -ne 0 ]; then
     mkdir $HOME/.kube
     k3d kubeconfig get cluster-1 > $HOME/.kube/config
 
-    echo -e "${VERT}OK${RESET}"
+    echo -e "${GREEN}OK${RESET}"
 else
-    echo -e "${VERT}already exist${RESET}"
+    echo -e "${GREEN}already exist${RESET}"
 fi
 
 
-echo -ne "${VERT}Kubectl installation | ${RESET}"
-kubectl version --client
-if [ $? -ne 0 ]; then
-    # Download the Kubectl latest release
-    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-
-    # Install Kubectl
-    sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-    rm ./kubectl
-
-    echo -e "${VERT}OK${RESET}"
-else
-    echo -e "${VERT}already exist${RESET}"
-fi
+##############################  Kubectl installation #####################
+print_message "nnl" "g" "Kubectl installation | "
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" >> ./script.log 2>&1
+kubectl version --client >> ./script.log 2>&1
+installation_utils_checker $? "sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl"
+rm ./kubectl >> ./script.log 2>&1
 
 
-echo -e "${VERT}Kubectl autocompletion, alias and shortcut${RESET}"
-grep 'source <(kubectl completion bash)' $HOME/.bashrc || echo '' >> $HOME/.bashrc
-grep 'source <(kubectl completion bash)' $HOME/.bashrc || echo 'source <(kubectl completion bash)' >> $HOME/.bashrc
-grep 'alias k="kubectl"' $HOME/.bashrc || echo 'alias k="kubectl"' >> $HOME/.bashrc
-grep 'complete -o default -F __start_kubectl k' $HOME/.bashrc || echo 'complete -o default -F __start_kubectl k' >> $HOME/.bashrc
+##############################  Git alias creation #######################
+print_message "nl" "g" "Git alias creation"
+grep 'alias g="git"' $HOME/.bashrc >> ./script.log 2>&1 || echo 'alias g="git"' >> $HOME/.bashrc
+git config --local alias.up '!f() { if [ -z "$1" ] || [ -z "$1" ]; then echo "Error: message and tag name required"; else git add . && git commit -m "$1" && git push; fi; }; f'
 source $HOME/.bashrc
 
 
-echo -e "${VERT}Argocd autocompletion${RESET}"
-grep 'source <(argocd completion bash)' $HOME/.bashrc || echo '' >> $HOME/.bashrc
-grep 'source <(argocd completion bash)' $HOME/.bashrc || echo 'source <(argocd completion bash)' >> $HOME/.bashrc
+##############################  K3d autocompletion creation ##############
+print_message "nl" "g" "K3d autocompletion"
+grep 'source <(k3d completion bash)' $HOME/.bashrc >> ./script.log 2>&1 || echo '' >> $HOME/.bashrc
+grep 'source <(k3d completion bash)' $HOME/.bashrc >> ./script.log 2>&1 || echo 'source <(k3d completion bash)' >> $HOME/.bashrc
 source $HOME/.bashrc
 
 
-echo -ne "${VERT}argocd namespace creation | ${RESET}"
-kubectl get namespace argocd
-if [ $? -ne 0 ]; then
-    kubectl create namespace argocd
-
-    echo -e "${VERT}OK${RESET}"
-else
-    echo -e "${VERT}already exist${RESET}"
-fi
+##############################  Kubbeclt alias and autocompletion creation
+print_message "nl" "g" "Kubectl autocompletion, alias and shortcut"
+grep 'source <(kubectl completion bash)' $HOME/.bashrc >> ./script.log 2>&1 || echo '' >> $HOME/.bashrc
+grep 'source <(kubectl completion bash)' $HOME/.bashrc >> ./script.log 2>&1 || echo 'source <(kubectl completion bash)' >> $HOME/.bashrc
+grep 'alias k="kubectl"' $HOME/.bashrc >> ./script.log 2>&1 || echo 'alias k="kubectl"' >> $HOME/.bashrc
+grep 'complete -o default -F __start_kubectl k' $HOME/.bashrc >> ./script.log 2>&1 || echo 'complete -o default -F __start_kubectl k' >> $HOME/.bashrc
+source $HOME/.bashrc
 
 
-echo -ne "${VERT}dev namespace creation | ${RESET}"
-kubectl get namespace dev
-if [ $? -ne 0 ]; then
-    kubectl create namespace dev
-
-    echo -e "${VERT}OK${RESET}"
-else
-    echo -e "${VERT}already exist${RESET}"
-fi
+##############################  Argocd autocompletion creation ###########
+print_message "nl" "g" "Argocd autocompletion"
+grep 'source <(argocd completion bash)' $HOME/.bashrc >> ./script.log 2>&1 || echo '' >> $HOME/.bashrc
+grep 'source <(argocd completion bash)' $HOME/.bashrc >> ./script.log 2>&1 || echo 'source <(argocd completion bash)' >> $HOME/.bashrc
+source $HOME/.bashrc
 
 
-# Argocd deployment
-kubectl apply -n argocd -f ./confs/argocd.yaml
+############################## Argocd namespace creation #################
+print_message "nnl" "g" "argocd namespace creation | "
+kubectl create namespace argocd >> ./script.log 2>&1
 
-# Ingress deployment
-kubectl apply -n argocd -f ./confs/ingress_argocd.yaml
-kubectl apply -n dev -f ./confs/ingress_dev.yaml
-
-# Project creation
-kubectl apply -n argocd -f ./confs/project.yaml
+response_status $? "There is an argocd namespace creation problem"
 
 
-# Argocd connection
-until kubectl --insecure-skip-tls-verify -n argocd get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}'; do
+############################## Dev namespace creation ####################
+print_message "nnl" "g" "dev namespace creation | "
+kubectl create namespace dev >> ./script.log 2>&1
+
+response_status $? "There is an dev namespace creation problem"
+
+
+############################## Argocd installation #######################
+print_message "nnl" "g" "Argocd installation | "
+kubectl apply -n argocd -f ./confs/argocd.yaml >> ./script.log 2>&1
+
+response_status $? "There is an argocd installation problem"
+
+
+############################## Argocd ingress creation ###################
+print_message "nnl" "g" "Argocd ingress creation | "
+kubectl apply -n argocd -f ./confs/ingress_argocd.yaml >> ./script.log 2>&1
+
+response_status $? "There is an argocd ingress creation problem"
+
+
+############################## Dev ingress creation ######################
+print_message "nnl" "g" "Dev ingress creation | "
+kubectl apply -n dev -f ./confs/ingress_dev.yaml >> ./script.log 2>&1
+
+response_status $? "There is a dev ingress creation problem"
+
+
+############################## Project creation ##########################
+print_message "nnl" "g" "Development project creation | "
+kubectl apply -n argocd -f ./confs/project.yaml >> ./script.log 2>&1
+
+response_status $? "There is a development project creation problem"
+
+
+############################## Argocd extraction key #####################
+print_message "nnl" "g" "Argocd extraction key | "
+until kubectl --insecure-skip-tls-verify -n argocd get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' >> ./script.log 2>&1; do
 	sleep 2
 done
 
+response_status $? "There is an extraction key problem"
+
+
+############################## Argocd connection #########################
+print_message "nnl" "g" "Argocd connection | "
 KEY=$(kubectl --insecure-skip-tls-verify -n argocd get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d)
-
-echo ${KEY}
-
-until argocd login argocd.admin.com:443 --skip-test-tls --username admin --password ${KEY} --insecure --grpc-web; do
+until argocd login argocd.admin.com:443 --skip-test-tls --username admin --password ${KEY} --insecure --grpc-web >> ./script.log 2>&1; do
 	sleep 2
 done
 
-# App deployment
-#argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things_mcordes.git --path p3/confs/app --dest-server https://kubernetes.default.svc --dest-namespace dev --grpc-web
-argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things_mcordes.git --path p3/confs/manifests --dest-server https://kubernetes.default.svc --sync-policy automated --auto-prune --self-heal --dest-namespace dev --project development --grpc-web
+response_status $? "There is an argocd login problem"
 
 
-#VERSION=$(curl -s https://api.github.com/repos/argoproj/argo-cd/releases/latest | grep tag_name | cut -d '"' -f 4)
-#curl -sSL -o argocd "https://github.com/argoproj/argo-cd/releases/download/${VERSION}/argocd-linux-amd64"
-#chmod +x argocd
-#sudo mv argocd /usr/local/bin/
+############################## App creation ##############################
+print_message "nnl" "g" "App creation | "
+argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things_mcordes.git --path p3/confs/manifests --dest-server https://kubernetes.default.svc --sync-policy automated --auto-prune --self-heal --dest-namespace dev --project development --grpc-web >> ./script.log 2>&1
 
-#######################################################
-
-# NOTA BENE :
-
-# Le Username par default est :
-# admin
-
-# Le password se trouve comme cela :
-# kubectl -n argocd get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
-
-#  alias github
-# git config --local alias.up '!f() { if [ -z "$1" ] || [ -z "$1" ]; then echo "Error: message and tag name required"; else git add . && git commit -m "$1" && git push; fi; }; f'
+response_status $? "There is an app creation problem"
