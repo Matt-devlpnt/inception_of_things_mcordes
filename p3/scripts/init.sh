@@ -22,6 +22,10 @@ else
 fi
 
 
+echo -e "${VERT}Git alias${RESET}"
+grep 'alias g="git"' $HOME/.bashrc || echo 'alias g="git"' >> $HOME/.bashrc
+git config --local alias.up '!f() { if [ -z "$1" ] || [ -z "$1" ]; then echo "Error: message and tag name required"; else git add . && git commit -m "$1" && git push; fi; }; f'
+
 echo -e "${VERT}K3d autocompletion${RESET}"
 grep 'source <(k3d completion bash)' $HOME/.bashrc || echo '' >> $HOME/.bashrc
 grep 'source <(k3d completion bash)' $HOME/.bashrc || echo 'source <(k3d completion bash)' >> $HOME/.bashrc
@@ -120,6 +124,9 @@ kubectl apply -n argocd -f ./confs/argocd.yaml
 kubectl apply -n argocd -f ./confs/ingress_argocd.yaml
 kubectl apply -n dev -f ./confs/ingress_dev.yaml
 
+# Project creation
+kubectl apply -n argocd -f ./confs/project.yaml
+
 
 # Argocd connection
 until kubectl --insecure-skip-tls-verify -n argocd get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}'; do
@@ -136,7 +143,7 @@ done
 
 # App deployment
 #argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things_mcordes.git --path p3/confs/app --dest-server https://kubernetes.default.svc --dest-namespace dev --grpc-web
-argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things_mcordes_app.git --path manifests --dest-server https://kubernetes.default.svc --sync-policy automated --auto-prune --self-heal --dest-namespace dev --grpc-web
+argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things_mcordes.git --path manifests --dest-server https://kubernetes.default.svc --sync-policy automated --auto-prune --self-heal --dest-namespace dev --project development --grpc-web
 
 
 #VERSION=$(curl -s https://api.github.com/repos/argoproj/argo-cd/releases/latest | grep tag_name | cut -d '"' -f 4)
@@ -155,5 +162,4 @@ argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things
 # kubectl -n argocd get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
 
 #  alias github
-# git config --local alias.up '!f() { if [ -z "$1" ] || [ -z "$1" ]; then echo "Error: message and tag name required"; else git add . && git commit -m "$1" && git tag -f -a "$1" -m "$1" && git push origin "$1"; fi; }; f'
 # git config --local alias.up '!f() { if [ -z "$1" ] || [ -z "$1" ]; then echo "Error: message and tag name required"; else git add . && git commit -m "$1" && git push; fi; }; f'
