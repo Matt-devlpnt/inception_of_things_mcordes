@@ -143,7 +143,7 @@ done
 
 # App deployment
 #argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things_mcordes.git --path p3/confs/app --dest-server https://kubernetes.default.svc --dest-namespace dev --grpc-web
-argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things_mcordes.git --path manifests --dest-server https://kubernetes.default.svc --sync-policy automated --auto-prune --self-heal --dest-namespace dev --project development --grpc-web
+argocd app create app --repo https://github.com/Matt-devlpnt/inception_of_things_mcordes.git --path p3/confs/manifests --dest-server https://kubernetes.default.svc --sync-policy automated --auto-prune --self-heal --dest-namespace dev --project development --grpc-web
 
 
 #VERSION=$(curl -s https://api.github.com/repos/argoproj/argo-cd/releases/latest | grep tag_name | cut -d '"' -f 4)
