@@ -6,6 +6,7 @@ metadata:
 spec:
   description: Test project
   sourceRepos:
+  # todo edit with gitlab.local's repo
     - https://github.com/Matt-devlpnt/inception_of_things_mcordes.git
   destinations:
     - namespace: dev
