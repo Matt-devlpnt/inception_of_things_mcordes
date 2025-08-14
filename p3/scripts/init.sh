@@ -64,6 +64,7 @@ installation_utils_checker() {
 ##########################################################################
 sudo apt-get update >> ./script.log 2>&1
 sudo apt-get upgrade -y >> ./script.log 2>&1
+sudo apt-get install -y ca-certificates curl >> ./script.log 2>&1
 
 
 ##############################  K3d installation #########################
@@ -72,37 +73,34 @@ k3d --version >> ./script.log 2>&1
 installation_utils_checker $? "sudo wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash"
 
 
+##############################  Docker installation ######################
+print_message "nnl" "g" "Docker installation | "
 # Add Docker's official GPG key:
-sudo apt-get update
-sudo apt-get install ca-certificates curl
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
+sudo install -m 0755 -d /etc/apt/keyrings >> ./script.log 2>&1
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc >> ./script.log 2>&1
+sudo chmod a+r /etc/apt/keyrings/docker.asc >> ./script.log 2>&1
 
 # Add the repository to Apt sources:
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
+sudo apt-get update >> ./script.log 2>&1
 
 # docker installation
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin >> ./script.log 2>&1
+
+print_message "nl" "g" "OK"
 
 
-echo -ne "${GREEN}cluster-1 creation | ${RESET}"
-k3d cluster list cluster-1
-if [ $? -ne 0 ]; then
-    # Create a cluster
-    k3d cluster create cluster-1 -p 443:443 -p 8888:80
-    rm -rf $HOME/.kube
-    mkdir $HOME/.kube
-    k3d kubeconfig get cluster-1 > $HOME/.kube/config
+##############################  Cluster creation #########################
+print_message "nnl" "g" "cluster-1 creation | "
+k3d cluster create cluster-1 -p 443:443 -p 8888:80 >> ./script.log 2>&1
+rm -rf $HOME/.kube >> ./script.log 2>&1
+mkdir $HOME/.kube >> ./script.log 2>&1
+k3d kubeconfig get cluster-1 > $HOME/.kube/config
 
-    echo -e "${GREEN}OK${RESET}"
-else
-    echo -e "${GREEN}already exist${RESET}"
-fi
+print_message "nl" "g" "OK"
 
 
 ##############################  Kubectl installation #####################
