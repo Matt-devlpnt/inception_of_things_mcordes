@@ -202,6 +202,9 @@ done
 response_status $? "There is an argocd login problem"
 
 
+############################## Helm install ####################
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
 ############################## Gitlab namespace creation ####################
 print_message "nnl" "g" "Gitlab namespace creation | "
 kubectl create namespace gitlab >> ./script.log 2>&1

@@ -88,7 +88,7 @@ echo \
 sudo apt-get update >> ./script.log 2>&1
 
 # docker installation
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin >> ./script.log 2>&1
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y >> ./script.log 2>&1
 
 print_message "nl" "g" "OK"
 
