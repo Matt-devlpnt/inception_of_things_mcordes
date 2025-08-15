@@ -1,0 +1,154 @@
+Hit:1 http://security.debian.org/debian-security bookworm-security InRelease
+Hit:2 http://deb.debian.org/debian bookworm InRelease
+Hit:3 http://deb.debian.org/debian bookworm-updates InRelease
+Hit:4 https://brave-browser-apt-release.s3.brave.com stable InRelease
+Hit:5 https://download.docker.com/linux/debian bookworm InRelease
+Hit:6 https://packages.microsoft.com/repos/code stable InRelease
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Calculating upgrade...
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+Reading package lists...
+Building dependency tree...
+Reading state information...
+ca-certificates is already the newest version (20230311+deb12u1).
+curl is already the newest version (7.88.1-10+deb12u12).
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+k3d version v5.8.3
+k3s version v1.31.5-k3s1 (default)
+Hit:1 http://deb.debian.org/debian bookworm InRelease
+Hit:2 http://security.debian.org/debian-security bookworm-security InRelease
+Hit:3 https://brave-browser-apt-release.s3.brave.com stable InRelease
+Hit:4 https://download.docker.com/linux/debian bookworm InRelease
+Hit:5 http://deb.debian.org/debian bookworm-updates InRelease
+Hit:6 https://packages.microsoft.com/repos/code stable InRelease
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+docker-ce is already the newest version (5:28.3.3-1~debian.12~bookworm).
+docker-ce-cli is already the newest version (5:28.3.3-1~debian.12~bookworm).
+containerd.io is already the newest version (1.7.27-1).
+docker-buildx-plugin is already the newest version (0.26.1-1~debian.12~bookworm).
+docker-compose-plugin is already the newest version (2.39.1-1~debian.12~bookworm).
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+[36mINFO[0m[0000] portmapping '443:443' lacks a nodefilter, but there's more than one node: defaulting to [servers:*:proxy agents:*:proxy] 
+[36mINFO[0m[0000] portmapping '8888:80' lacks a nodefilter, but there's more than one node: defaulting to [servers:*:proxy agents:*:proxy] 
+[36mINFO[0m[0000] Prep: Network                                
+[36mINFO[0m[0000] Created network 'k3d-cluster-1'              
+[36mINFO[0m[0000] Created image volume k3d-cluster-1-images    
+[36mINFO[0m[0000] Starting new tools node...                   
+[36mINFO[0m[0001] Pulling image 'ghcr.io/k3d-io/k3d-tools:5.8.3' 
+[36mINFO[0m[0001] Creating node 'k3d-cluster-1-server-0'       
+[36mINFO[0m[0002] Starting node 'k3d-cluster-1-tools'          
+[36mINFO[0m[0002] Pulling image 'docker.io/rancher/k3s:v1.31.5-k3s1' 
+[36mINFO[0m[0005] Creating LoadBalancer 'k3d-cluster-1-serverlb' 
+[36mINFO[0m[0005] Pulling image 'ghcr.io/k3d-io/k3d-proxy:5.8.3' 
+[36mINFO[0m[0008] Using the k3d-tools node to gather environment information 
+[36mINFO[0m[0008] HostIP: using network gateway 172.18.0.1 address 
+[36mINFO[0m[0008] Starting cluster 'cluster-1'                 
+[36mINFO[0m[0008] Starting servers...                          
+[36mINFO[0m[0008] Starting node 'k3d-cluster-1-server-0'       
+[36mINFO[0m[0011] All agents already running.                  
+[36mINFO[0m[0011] Starting helpers...                          
+[36mINFO[0m[0011] Starting node 'k3d-cluster-1-serverlb'       
+[36mINFO[0m[0017] Injecting records for hostAliases (incl. host.k3d.internal) and for 2 network members into CoreDNS configmap... 
+[36mINFO[0m[0019] Cluster 'cluster-1' created successfully!    
+[36mINFO[0m[0019] You can now use it like this:                
+kubectl cluster-info
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   138  100   138    0     0   1000      0 --:--:-- --:--:-- --:--:--  1007
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 64 57.3M   64 36.7M    0     0  28.4M      0  0:00:02  0:00:01  0:00:01 34.4M 97 57.3M   97 56.1M    0     0  25.3M      0  0:00:02  0:00:02 --:--:-- 28.1M 99 57.3M   99 57.0M    0     0  17.7M      0  0:00:03  0:00:03 --:--:-- 19.0M100 57.3M  100 57.3M    0     0  17.2M      0  0:00:03  0:00:03 --:--:-- 18.4M
+Client Version: v1.33.4
+Kustomize Version: v5.6.0
+alias g="git"
+source <(k3d completion bash)
+source <(k3d completion bash)
+source <(kubectl completion bash)
+source <(kubectl completion bash)
+alias k="kubectl"
+complete -o default -F __start_kubectl k
+source <(argocd completion bash)
+source <(argocd completion bash)
+namespace/argocd created
+namespace/dev created
+customresourcedefinition.apiextensions.k8s.io/applications.argoproj.io created
+customresourcedefinition.apiextensions.k8s.io/applicationsets.argoproj.io created
+customresourcedefinition.apiextensions.k8s.io/appprojects.argoproj.io created
+serviceaccount/argocd-application-controller created
+serviceaccount/argocd-applicationset-controller created
+serviceaccount/argocd-dex-server created
+serviceaccount/argocd-notifications-controller created
+serviceaccount/argocd-redis created
+serviceaccount/argocd-repo-server created
+serviceaccount/argocd-server created
+role.rbac.authorization.k8s.io/argocd-application-controller created
+role.rbac.authorization.k8s.io/argocd-applicationset-controller created
+role.rbac.authorization.k8s.io/argocd-dex-server created
+role.rbac.authorization.k8s.io/argocd-notifications-controller created
+role.rbac.authorization.k8s.io/argocd-redis created
+role.rbac.authorization.k8s.io/argocd-server created
+clusterrole.rbac.authorization.k8s.io/argocd-application-controller created
+clusterrole.rbac.authorization.k8s.io/argocd-applicationset-controller created
+clusterrole.rbac.authorization.k8s.io/argocd-server created
+rolebinding.rbac.authorization.k8s.io/argocd-application-controller created
+rolebinding.rbac.authorization.k8s.io/argocd-applicationset-controller created
+rolebinding.rbac.authorization.k8s.io/argocd-dex-server created
+rolebinding.rbac.authorization.k8s.io/argocd-notifications-controller created
+rolebinding.rbac.authorization.k8s.io/argocd-redis created
+rolebinding.rbac.authorization.k8s.io/argocd-server created
+clusterrolebinding.rbac.authorization.k8s.io/argocd-application-controller created
+clusterrolebinding.rbac.authorization.k8s.io/argocd-applicationset-controller created
+clusterrolebinding.rbac.authorization.k8s.io/argocd-server created
+configmap/argocd-cm created
+configmap/argocd-cmd-params-cm created
+configmap/argocd-gpg-keys-cm created
+configmap/argocd-notifications-cm created
+configmap/argocd-rbac-cm created
+configmap/argocd-ssh-known-hosts-cm created
+configmap/argocd-tls-certs-cm created
+secret/argocd-notifications-secret created
+secret/argocd-secret created
+service/argocd-applicationset-controller created
+service/argocd-dex-server created
+service/argocd-metrics created
+service/argocd-notifications-controller-metrics created
+service/argocd-redis created
+service/argocd-repo-server created
+service/argocd-server created
+service/argocd-server-metrics created
+deployment.apps/argocd-applicationset-controller created
+deployment.apps/argocd-dex-server created
+deployment.apps/argocd-notifications-controller created
+deployment.apps/argocd-redis created
+deployment.apps/argocd-repo-server created
+deployment.apps/argocd-server created
+statefulset.apps/argocd-application-controller created
+networkpolicy.networking.k8s.io/argocd-application-controller-network-policy created
+networkpolicy.networking.k8s.io/argocd-applicationset-controller-network-policy created
+networkpolicy.networking.k8s.io/argocd-dex-server-network-policy created
+networkpolicy.networking.k8s.io/argocd-notifications-controller-network-policy created
+networkpolicy.networking.k8s.io/argocd-redis-network-policy created
+networkpolicy.networking.k8s.io/argocd-repo-server-network-policy created
+networkpolicy.networking.k8s.io/argocd-server-network-policy created
+ingress.networking.k8s.io/argocd-ingress created
+ingress.networking.k8s.io/dev-ingress created
+appproject.argoproj.io/development created
+Error from server (NotFound): secrets "argocd-initial-admin-secret" not found
+Error from server (NotFound): secrets "argocd-initial-admin-secret" not found
+Error from server (NotFound): secrets "argocd-initial-admin-secret" not found
+VXo3T0RscXczRE5uSDRPWA=={"level":"fatal","msg":"rpc error: code = Unknown desc = POST https://argocd.admin.com:443/session.SessionService/Create failed with status code 404","time":"2025-08-15T10:05:35-04:00"}
+{"level":"fatal","msg":"rpc error: code = Unknown desc = POST https://argocd.admin.com:443/session.SessionService/Create failed with status code 404","time":"2025-08-15T10:05:38-04:00"}
+{"level":"fatal","msg":"rpc error: code = Unknown desc = POST https://argocd.admin.com:443/session.SessionService/Create failed with status code 404","time":"2025-08-15T10:05:40-04:00"}
+{"level":"fatal","msg":"rpc error: code = Unknown desc = POST https://argocd.admin.com:443/session.SessionService/Create failed with status code 404","time":"2025-08-15T10:05:42-04:00"}
+{"level":"fatal","msg":"rpc error: code = Unknown desc = POST https://argocd.admin.com:443/session.SessionService/Create failed with status code 404","time":"2025-08-15T10:05:44-04:00"}
+{"level":"fatal","msg":"rpc error: code = Unknown desc = POST https://argocd.admin.com:443/session.SessionService/Create failed with status code 404","time":"2025-08-15T10:05:46-04:00"}
+{"level":"fatal","msg":"rpc error: code = Unknown desc = POST https://argocd.admin.com:443/session.SessionService/Create failed with status code 404","time":"2025-08-15T10:05:48-04:00"}
+{"level":"fatal","msg":"rpc error: code = Unknown desc = POST https://argocd.admin.com:443/session.SessionService/Create failed with status code 404","time":"2025-08-15T10:05:50-04:00"}
+{"level":"fatal","msg":"rpc error: code = Unknown desc = POST https://argocd.admin.com:443/session.SessionService/Create failed with status code 404","time":"2025-08-15T10:05:52-04:00"}
+'admin:login' logged in successfully
+Context 'argocd.admin.com:443' updated
+application 'app' created
