@@ -47,20 +47,6 @@ response_status() {
 }
 
 
-# This function is an installation utils checker and take two arguments:
-# - First argument: the return value $? of the function used before using the response_status function
-# - Second argument: this argument is a util install command
-
-installation_utils_checker() {
-    if [ $1 -ne 0 ]; then
-        bash $2 >> ./script.log 2>&1
-        print_message "nl" "g" "OK"
-    else
-        print_message "nl" "g" "Already exist"
-    fi
-}
-
-
 ##########################################################################
 sudo apt-get update >> ./script.log 2>&1
 sudo apt-get upgrade -y >> ./script.log 2>&1
@@ -69,8 +55,8 @@ sudo apt-get install -y ca-certificates curl >> ./script.log 2>&1
 
 ##############################  K3d installation #########################
 print_message "nnl" "g" "K3d installation | "
-k3d --version >> ./script.log 2>&1
-installation_utils_checker $? "sudo wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash"
+sudo wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+print_message "nl" "g" "OK"
 
 
 ##############################  Docker installation ######################
@@ -88,7 +74,7 @@ echo \
 sudo apt-get update >> ./script.log 2>&1
 
 # docker installation
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y >> ./script.log 2>&1
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin >> ./script.log 2>&1
 
 print_message "nl" "g" "OK"
 
@@ -106,9 +92,9 @@ print_message "nl" "g" "OK"
 ##############################  Kubectl installation #####################
 print_message "nnl" "g" "Kubectl installation | "
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" >> ./script.log 2>&1
-kubectl version --client >> ./script.log 2>&1
-installation_utils_checker $? "sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 rm ./kubectl >> ./script.log 2>&1
+print_message "nl" "g" "OK"
 
 
 ##############################  Git alias creation #######################
@@ -125,7 +111,7 @@ grep 'source <(k3d completion bash)' $HOME/.bashrc >> ./script.log 2>&1 || echo 
 source $HOME/.bashrc
 
 
-##############################  Kubbeclt alias and autocompletion creation
+##############################  Kubeclt alias and autocompletion creation#
 print_message "nl" "g" "Kubectl autocompletion, alias and shortcut"
 grep 'source <(kubectl completion bash)' $HOME/.bashrc >> ./script.log 2>&1 || echo '' >> $HOME/.bashrc
 grep 'source <(kubectl completion bash)' $HOME/.bashrc >> ./script.log 2>&1 || echo 'source <(kubectl completion bash)' >> $HOME/.bashrc
@@ -153,6 +139,13 @@ print_message "nnl" "g" "dev namespace creation | "
 kubectl create namespace dev >> ./script.log 2>&1
 
 response_status $? "There is an dev namespace creation problem"
+
+
+############################## Argocd CLI installation ###################
+VERSION=$(curl -L -s https://raw.githubusercontent.com/argoproj/argo-cd/stable/VERSION)
+curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/v$VERSION/argocd-linux-amd64
+sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+rm argocd-linux-amd64
 
 
 ############################## Argocd installation #######################

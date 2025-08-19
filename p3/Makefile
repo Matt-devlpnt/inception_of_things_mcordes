@@ -1,9 +1,4 @@
 all:
-	@rm -f script.log
-#@sudo k3d cluster delete cluster-1 >> ./script.log 2>&1
-#	@if [ $$(docker images -qa | wc -l) -ne 0 ]; then \
-#		docker rmi -f $(shell docker images -qa) >> ./script.log 2>&1; \
-#	fi
 	@bash ./scripts/init.sh
 
 fclean:
@@ -13,6 +8,7 @@ fclean:
 		docker rmi -f $(shell docker images -qa) > /dev/null; \
 	fi
 
+re: fclean all
 
 argo-key:
-	@kubectl --insecure-skip-tls-verify -n argocd get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d && echo
+	@kubectl --insecure-skip-tls-verify -n argocd get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d ; echo
