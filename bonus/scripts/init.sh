@@ -218,9 +218,11 @@ helm repo update >> ./script.log 2>&1
 
 helm upgrade --install gitlab gitlab/gitlab \
   --namespace gitlab \
-  --timeout 600s \
+  --timeout 900s \
   --set global.hosts.domain=local \
-  --set global.hosts.externalIP=127.0.0.1 \
+  --set global.hosts.https=true \
+  --set global.ingress.enabled=false \
+  --set nginx-ingress.enabled=false \
   --set gitlab-runner.install=false \
   --set certmanager-issuer.email="vicalvez@student.42nice.fr" >> ./script.log 2>&1
 
@@ -232,3 +234,6 @@ print_message "nnl" "g" "Gitlab ingress creation | "
 kubectl apply -n gitlab -f ./confs/ingress_gitlab.yaml >> ./script.log 2>&1
 response_status $? "There is an gitlab ingress creation problem"
 
+
+
+# http://gitlab-webservice-default.gitlab.svc.cluster.local:8181/<user>/<project>.git

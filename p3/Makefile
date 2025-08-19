@@ -12,3 +12,7 @@ fclean:
 	@if [ $$(docker images -qa | wc -l) -ne 0 ]; then \
 		docker rmi -f $(shell docker images -qa) > /dev/null; \
 	fi
+
+
+argo-key:
+	@kubectl --insecure-skip-tls-verify -n argocd get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d && echo
